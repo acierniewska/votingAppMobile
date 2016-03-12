@@ -36,10 +36,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
+import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.QuickstartPreferences;
+import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.RegistrationIntentService;
 import pl.edu.wat.wcy.dsk.votingappmobile.voting.VoteActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -55,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
+
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,36 @@ public class LoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
 
         showProgress(true);
-        checkUserTask = new CheckUserTask(getTelephoneNumber());
-        checkUserTask.execute((Void) null);
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                token = intent.getStringExtra("token");
+                checkUserTask = new CheckUserTask(getTelephoneNumber());
+                checkUserTask.execute((Void) null);
+            }
+        };
+
+        // Registering BroadcastReceiver
+        registerReceiver();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
     }
 
     /**
@@ -121,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
     @NonNull
     private String getTelephoneNumber() {
         TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        String telephoneNumber = tMgr.getLine1Number();
+        String telephoneNumber = token;//tMgr.getLine1Number();
         if (telephoneNumber == null || telephoneNumber.isEmpty())
             telephoneNumber = "691231503";
 
@@ -167,14 +198,15 @@ public class LoginActivity extends AppCompatActivity {
     private void switchActivity(User user) {
         Intent nextScreen = new Intent(getApplicationContext(), VoteActivity.class);
         nextScreen.putExtra("user", user);
-        Survey survey = new Survey();
-        survey.setQuestion("Czy pokazać cycki?");
-        Map<Integer, String> answers = new HashMap<>();
-        answers.put(1, "Tak");
-        answers.put(20, "Bardzo proszę");
-        answers.put(3, "Jasne");
-        survey.setAnswers(answers);
-        nextScreen.putExtra("survey", survey);
+        Survey f = new Survey();
+        f.setQuestion("Czy pokazać cycki?");
+        Map<Integer, String> map = new HashMap<>();
+        map.put(1, "Tak");
+        map.put(20, "Bardzo proszę");
+        map.put(3, "Jasne");
+        f.setAnswers(map);
+        nextScreen.putExtra("survey", f);
+        showProgress(false);
         startActivity(nextScreen);
 
         finish();
@@ -219,9 +251,9 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected User doInBackground(Void... params) {
-            String urlString = "http://orangepi.duckdns.org:1314/users/findByPhoneNumber?phoneNumber=" + mTelephoneNumber;
             User user = null;
             try {
+                String urlString = "http://orangepi.duckdns.org:1314/users/findByPhoneNumber?phoneNumber=" + mTelephoneNumber;
                 URL url = new URL(urlString);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -251,11 +283,10 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final User user) {
             mAuthTask = null;
-            showProgress(false);
-
             if (user != null) {
                 switchActivity(user);
             } else {
+                showProgress(false);
                 nameTextView.setVisibility(View.VISIBLE);
                 mSignInButton.setVisibility(View.VISIBLE);
             }
