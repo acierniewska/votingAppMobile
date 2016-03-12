@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">votingAppMobile</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_name">Imię i nazwisko</string>
+    <string name="action_sign_in">Zarejestruj się!</string>
+    <string name="error_sign_in">Wystąpił błąd podczas rejestracji.</string>
+    <string name="title_activity_vote">Głosowanie</string>
+
+    <string name="vote">Głosuj!</string>
+
+
+    <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
+        send downstream messages to this app.</string>
+    <string name="registering_message">Generating InstanceID token...</string>
+    <string name="token_error_message">An error occurred while either fetching the InstanceID token,
+        sending the fetched token to the server or subscribing to the PubSub topic. Please try
+        running the sample again.</string>
+</resources>
