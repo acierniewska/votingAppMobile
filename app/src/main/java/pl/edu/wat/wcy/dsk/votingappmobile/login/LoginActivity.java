@@ -33,19 +33,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+import pl.edu.wat.wcy.dsk.votingappmobile.Form;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.QuickstartPreferences;
 import pl.edu.wat.wcy.dsk.votingappmobile.voting.VoteActivity;
 
 public class LoginActivity extends AppCompatActivity {
-    private UserRegisterTask mAuthTask = null;
-    private CheckUserTask checkUserTask = null;
-
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
-
+    private UserRegisterTask mAuthTask = null;
+    private CheckUserTask checkUserTask = null;
     // UI references.
     private AutoCompleteTextView nameTextView;
     private Button mSignInButton;
@@ -122,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
         TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         String telephoneNumber = tMgr.getLine1Number();
         if (telephoneNumber == null || telephoneNumber.isEmpty())
-            telephoneNumber = "69131503";
+            telephoneNumber = "691231503";
 
         return telephoneNumber;
     }
@@ -163,22 +164,30 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void switchActivity(User user)
-    {
+    private void switchActivity(User user) {
         Intent nextScreen = new Intent(getApplicationContext(), VoteActivity.class);
         nextScreen.putExtra("user", user);
+        Form f = new Form();
+        f.setQuestion("Czy pokazać cycki?");
+        Map<Integer, String> map = new HashMap<>();
+        map.put(1, "Tak");
+        map.put(2, "Bardzo proszę");
+        map.put(3, "Jasne");
+        f.setAnswers(map);
+        nextScreen.putExtra("form", f);
         startActivity(nextScreen);
 
         finish();
     }
 
-    private void registerReceiver(){
-        if(!isReceiverRegistered) {
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
             isReceiverRegistered = true;
         }
     }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
