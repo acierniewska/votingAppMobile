@@ -3,7 +3,7 @@ package pl.edu.wat.wcy.dsk.votingappmobile;
 import java.io.Serializable;
 import java.util.Map;
 
-public class Form implements Serializable {
+public class Survey implements Serializable {
     private String question;
     private Map<Integer, String> answers;
 

@@ -36,7 +36,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import pl.edu.wat.wcy.dsk.votingappmobile.Form;
+import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.QuickstartPreferences;
@@ -167,14 +167,14 @@ public class LoginActivity extends AppCompatActivity {
     private void switchActivity(User user) {
         Intent nextScreen = new Intent(getApplicationContext(), VoteActivity.class);
         nextScreen.putExtra("user", user);
-        Form f = new Form();
-        f.setQuestion("Czy pokazać cycki?");
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1, "Tak");
-        map.put(2, "Bardzo proszę");
-        map.put(3, "Jasne");
-        f.setAnswers(map);
-        nextScreen.putExtra("form", f);
+        Survey survey = new Survey();
+        survey.setQuestion("Czy pokazać cycki?");
+        Map<Integer, String> answers = new HashMap<>();
+        answers.put(1, "Tak");
+        answers.put(20, "Bardzo proszę");
+        answers.put(3, "Jasne");
+        survey.setAnswers(answers);
+        nextScreen.putExtra("survey", survey);
         startActivity(nextScreen);
 
         finish();

@@ -23,13 +23,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-import pl.edu.wat.wcy.dsk.votingappmobile.Form;
+import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 
 public class VoteActivity extends AppCompatActivity {
     private User mUser;
-    private Form mForm;
+    private Survey mSurvey;
 
     private TextView mQuestion;
     private RadioGroup mRadioGroup;
@@ -62,7 +62,7 @@ public class VoteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         mUser = (User) intent.getSerializableExtra("user");
-        mForm = (Form) intent.getSerializableExtra("form");
+        mSurvey = (Survey) intent.getSerializableExtra("survey");
         createRadioButtons();
     }
 
@@ -72,14 +72,14 @@ public class VoteActivity extends AppCompatActivity {
     }
 
     private void createRadioButtons() {
-        if (mForm == null) {
+        if (mSurvey == null) {
             mQuestion.setText("Brak aktywnej ankiety :(");
             mVoteButton.setVisibility(View.INVISIBLE);
             return;
         }
 
-        mQuestion.setText(mForm.getQuestion());
-        for (Map.Entry<Integer, String> e : mForm.getAnswers().entrySet()) {
+        mQuestion.setText(mSurvey.getQuestion());
+        for (Map.Entry<Integer, String> e : mSurvey.getAnswers().entrySet()) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setId(e.getKey());
             radioButton.setText(e.getValue());
