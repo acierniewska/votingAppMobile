@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.dsk.votingappmobile.login;
+package pl.edu.wat.wcy.dsk.votingappmobile.voting;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
+import pl.edu.wat.wcy.dsk.votingappmobile.User;
 
 public class VoteActivity extends AppCompatActivity {
     private User mUser;

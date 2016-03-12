@@ -35,6 +35,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
+import pl.edu.wat.wcy.dsk.votingappmobile.User;
+import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.QuickstartPreferences;
+import pl.edu.wat.wcy.dsk.votingappmobile.voting.VoteActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private UserRegisterTask mAuthTask = null;

@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.dsk.votingappmobile.login;
+package pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
+import pl.edu.wat.wcy.dsk.votingappmobile.voting.VoteActivity;
 
 public class MyGcmListenerService extends GcmListenerService {
 

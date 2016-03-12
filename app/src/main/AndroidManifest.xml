@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".login.VoteActivity"
+            android:name=".voting.VoteActivity"
             android:label="@string/app_name">
         </activity>
 
@@ -45,7 +45,7 @@
 
         <!-- [START gcm_listener] -->
         <service
-            android:name=".login.MyGcmListenerService"
+            android:name=".cloudmessaging.MyGcmListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
@@ -54,7 +54,7 @@
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name="login.MyInstanceIDListenerService"
+            android:name=".cloudmessaging.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
@@ -62,7 +62,7 @@
         </service>
         <!-- [END instanceId_listener] -->
         <service
-            android:name="login.RegistrationIntentService"
+            android:name=".cloudmessaging.RegistrationIntentService"
             android:exported="false">
         </service>
     </application>

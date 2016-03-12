@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.dsk.votingappmobile.login;
+package pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging;
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
  *
