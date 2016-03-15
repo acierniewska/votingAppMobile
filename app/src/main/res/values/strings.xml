@@ -16,4 +16,11 @@
     <string name="token_error_message">An error occurred while either fetching the InstanceID token,
         sending the fetched token to the server or subscribing to the PubSub topic. Please try
         running the sample again.</string>
+
+    <string name="new_survey_available">Nowa ankieta jest dostępna.</string>
+    <string name="surveys_result_available">Ankieta zakończona. Zobacz wyniki.</string>
+    <string name="no_active_survey">Brak aktywnej ankiety :(</string>
+    <string name="voting_imposibru">"Nie możesz oddać głosu :("</string>
+    <string name="voting_success">Głos oddany - dzięki!</string>
+    <string name="answer_result">%d - %d%</string>
 </resources>

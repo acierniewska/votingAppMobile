@@ -12,12 +12,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import pl.edu.wat.wcy.dsk.votingappmobile.Answer;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
-import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.login.LoginActivity;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -52,16 +47,19 @@ public class MyGcmListenerService extends GcmListenerService {
         if (messagePart.length != 2)
             return;
 
-        if (messagePart[0].equals("survey")) {
-            message = "Nowa ankieta!";
-        } else if (messagePart[0].equals("result")) {
-            message = "Wyniki ankiety są już dostępne!";
-        } else
-            return;
+        switch (messagePart[0]) {
+            case "survey":
+                message = getString(R.string.new_survey_available);
+                break;
+            case "result":
+                message = getString(R.string.surveys_result_available);
+                break;
+            default:
+                return;
+        }
 
         Integer surveyId = Integer.valueOf(messagePart[1].trim());
         intent.putExtra("surveyId", surveyId);
-        //intent.putExtra("survey", getSurvey());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -69,7 +67,7 @@ public class MyGcmListenerService extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.cat_track_24)
-                .setContentTitle("VotingAppMobile")
+                .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
@@ -79,35 +77,5 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(surveyId, notificationBuilder.build());
-    }
-
-
-    private Survey getSurvey() {
-        Survey survey = new Survey();
-        survey.setQuestion("Czy pokazać cycki?");
-        survey.setIsClosed(true);
-        List<Answer> answers = new ArrayList<>();
-        Answer a = new Answer();
-        a.setAnswer("Tak");
-        a.setId(1);
-        answers.add(a);
-
-        a = new Answer();
-        a.setAnswer("Jasne");
-        a.setId(2);
-        a.setNumberOfVotes(2);
-        a.setPercent(50);
-        answers.add(a);
-
-        a = new Answer();
-        a.setAnswer("Bardzo proszę.");
-        a.setId(20);
-        a.setNumberOfVotes(2);
-        a.setPercent(50);
-        answers.add(a);
-
-        survey.setAnswers(answers);
-
-        return survey;
     }
 }

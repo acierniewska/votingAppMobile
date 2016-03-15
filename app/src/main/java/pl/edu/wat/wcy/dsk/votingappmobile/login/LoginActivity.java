@@ -54,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
 
-    private Survey mSurvey;
     private String token;
 
     @Override
@@ -175,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void executeGetSurvey(User user) {
+    private void executeGetSurvey() {
         Intent prevScreen = getIntent();
         int surveyId = prevScreen.getIntExtra("surveyId", -1);
         GetSurveyTask surveyTask = new GetSurveyTask(surveyId);
@@ -187,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
         if (survey == null || !survey.isClosed())
             nextActivity = VoteActivity.class;
         else
-        nextActivity = ShowResultActivity.class;
+            nextActivity = ShowResultActivity.class;
 
         Intent nextScreen = new Intent(getApplicationContext(), nextActivity);
         nextScreen.putExtra("survey", survey);
@@ -235,6 +234,9 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Survey doInBackground(Void... params) {
+            if (mSurveyId == -1)
+                return null;
+
             Survey survey = null;
             try {
                 String urlString = "http://orangepi.duckdns.org:1314/survey?id=" + mSurveyId;
@@ -313,7 +315,7 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final User user) {
             mAuthTask = null;
             if (user != null) {
-                executeGetSurvey(user);
+                executeGetSurvey();
             } else {
                 showProgress(false);
                 nameTextView.setVisibility(View.VISIBLE);

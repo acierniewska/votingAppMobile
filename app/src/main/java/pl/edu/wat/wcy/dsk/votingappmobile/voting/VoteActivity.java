@@ -25,10 +25,8 @@ import java.net.URL;
 import pl.edu.wat.wcy.dsk.votingappmobile.Answer;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
 import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
-import pl.edu.wat.wcy.dsk.votingappmobile.User;
 
 public class VoteActivity extends AppCompatActivity {
-    private User mUser;
     private Survey mSurvey;
 
     private TextView mQuestion;
@@ -61,7 +59,6 @@ public class VoteActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        mUser = (User) intent.getSerializableExtra("user");
         mSurvey = (Survey) intent.getSerializableExtra("survey");
         createRadioButtons();
     }
@@ -81,7 +78,7 @@ public class VoteActivity extends AppCompatActivity {
 
     private void createRadioButtons() {
         if (mSurvey == null) {
-            mQuestion.setText("Brak aktywnej ankiety :(");
+            mQuestion.setText(getString(R.string.no_active_survey));
             mVoteButton.setVisibility(View.INVISIBLE);
             return;
         }
@@ -184,11 +181,11 @@ public class VoteActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                mQuestion.setText("Głos oddany - dzięki!");
+                mQuestion.setText(getString(R.string.voting_success));
                 mVoteButton.setVisibility(View.INVISIBLE);
                 mRadioGroup.setVisibility(View.INVISIBLE);
             } else {
-                Toast.makeText(getApplicationContext(), "Nie możesz oddać głosu :(" + answerId, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.voting_imposibru) + answerId, Toast.LENGTH_LONG).show();
             }
         }
 
