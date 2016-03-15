@@ -11,10 +11,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,14 +31,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
 import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.QuickstartPreferences;
 import pl.edu.wat.wcy.dsk.votingappmobile.cloudmessaging.RegistrationIntentService;
+import pl.edu.wat.wcy.dsk.votingappmobile.showresult.ShowResultActivity;
 import pl.edu.wat.wcy.dsk.votingappmobile.voting.VoteActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -57,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
 
+    private Survey mSurvey;
     private String token;
 
     @Override
@@ -83,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 token = intent.getStringExtra("token");
-                checkUserTask = new CheckUserTask(getTelephoneNumber());
+                checkUserTask = new CheckUserTask(token);
                 checkUserTask.execute((Void) null);
             }
         };
@@ -131,32 +129,13 @@ public class LoginActivity extends AppCompatActivity {
 
         // Store values at the time of the login attempt.
         String name = nameTextView.getText().toString();
-        String telephoneNumber = getTelephoneNumber();
+        String telephoneNumber = token;
 
-        boolean cancel = false;
-        View focusView = null;
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserRegisterTask(name, telephoneNumber);
-            mAuthTask.execute((Void) null);
-        }
-    }
-
-    @NonNull
-    private String getTelephoneNumber() {
-        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        String telephoneNumber = token;//tMgr.getLine1Number();
-        if (telephoneNumber == null || telephoneNumber.isEmpty())
-            telephoneNumber = "691231503";
-
-        return telephoneNumber;
+        // Show a progress spinner, and kick off a background task to
+        // perform the user login attempt.
+        showProgress(true);
+        mAuthTask = new UserRegisterTask(name, telephoneNumber);
+        mAuthTask.execute((Void) null);
     }
 
     /**
@@ -195,19 +174,25 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void switchActivity(User user) {
-        Intent nextScreen = new Intent(getApplicationContext(), VoteActivity.class);
-        nextScreen.putExtra("user", user);
-        Survey f = new Survey();
-        f.setQuestion("Czy pokazać cycki?");
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1, "Tak");
-        map.put(20, "Bardzo proszę");
-        map.put(3, "Jasne");
-        f.setAnswers(map);
-        nextScreen.putExtra("survey", f);
-        showProgress(false);
+
+    private void executeGetSurvey(User user) {
+        Intent prevScreen = getIntent();
+        int surveyId = prevScreen.getIntExtra("surveyId", -1);
+        GetSurveyTask surveyTask = new GetSurveyTask(surveyId);
+        surveyTask.execute((Void) null);
+    }
+
+    private void switchActivity(Survey survey) {
+        Class nextActivity;
+        if (survey == null || !survey.isClosed())
+            nextActivity = VoteActivity.class;
+        else
+        nextActivity = ShowResultActivity.class;
+
+        Intent nextScreen = new Intent(getApplicationContext(), nextActivity);
+        nextScreen.putExtra("survey", survey);
         startActivity(nextScreen);
+        showProgress(false);
 
         finish();
     }
@@ -241,19 +226,63 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    public class GetSurveyTask extends AsyncTask<Void, Void, Survey> {
+        private final int mSurveyId;
+
+        GetSurveyTask(int surveyId) {
+            mSurveyId = surveyId;
+        }
+
+        @Override
+        protected Survey doInBackground(Void... params) {
+            Survey survey = null;
+            try {
+                String urlString = "http://orangepi.duckdns.org:1314/survey?id=" + mSurveyId;
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("User-Agent", "");
+                int responseCode = connection.getResponseCode();
+                if (responseCode != 200 && responseCode != 201)
+                    return null;
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder sb = new StringBuilder("");
+                String line;
+                while ((line = rd.readLine()) != null) {
+                    sb.append(line);
+                }
+                if (!sb.toString().isEmpty())
+                    survey = new Gson().fromJson(sb.toString(), Survey.class);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
+
+            return survey;
+        }
+
+        @Override
+        protected void onPostExecute(final Survey survey) {
+            mAuthTask = null;
+            switchActivity(survey);
+        }
+    }
 
     public class CheckUserTask extends AsyncTask<Void, Void, User> {
-        private final String mTelephoneNumber;
+        private final String mToken;
 
-        CheckUserTask(String telephoneNumber) {
-            mTelephoneNumber = telephoneNumber;
+        CheckUserTask(String token) {
+            mToken = token;
         }
 
         @Override
         protected User doInBackground(Void... params) {
             User user = null;
             try {
-                String urlString = "http://orangepi.duckdns.org:1314/users/findByPhoneNumber?phoneNumber=" + mTelephoneNumber;
+                String urlString = "http://orangepi.duckdns.org:1314/users/findByPhoneNumber?phoneNumber=" + mToken;
                 URL url = new URL(urlString);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -284,7 +313,7 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final User user) {
             mAuthTask = null;
             if (user != null) {
-                switchActivity(user);
+                executeGetSurvey(user);
             } else {
                 showProgress(false);
                 nameTextView.setVisibility(View.VISIBLE);
@@ -302,16 +331,16 @@ public class LoginActivity extends AppCompatActivity {
 
         private StringBuilder builder;
         private String mName;
-        private String mTelephoneNumber;
+        private String mToken;
 
-        UserRegisterTask(String name, String telephoneNumber) {
+        UserRegisterTask(String name, String token) {
             mName = name;
-            mTelephoneNumber = telephoneNumber;
+            mToken = token;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String urlString = "http://orangepi.duckdns.org:1314/users/registerNew?phoneNumber=" + mTelephoneNumber + "&name=" + mName;
+            String urlString = "http://orangepi.duckdns.org:1314/users/registerNew?phoneNumber=" + mToken + "&name=" + mName;
             builder = new StringBuilder("");
             try {
                 URL url = new URL(urlString);
@@ -345,7 +374,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                checkUserTask = new CheckUserTask(getTelephoneNumber());
+                checkUserTask = new CheckUserTask(token);
                 checkUserTask.execute((Void) null);
             } else {
                 nameTextView.getText().clear();

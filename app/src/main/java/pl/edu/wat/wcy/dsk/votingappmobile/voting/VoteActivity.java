@@ -21,10 +21,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
-import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
+import pl.edu.wat.wcy.dsk.votingappmobile.Answer;
 import pl.edu.wat.wcy.dsk.votingappmobile.R;
+import pl.edu.wat.wcy.dsk.votingappmobile.Survey;
 import pl.edu.wat.wcy.dsk.votingappmobile.User;
 
 public class VoteActivity extends AppCompatActivity {
@@ -66,6 +66,14 @@ public class VoteActivity extends AppCompatActivity {
         createRadioButtons();
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+
+    }
+
     private void doVote() {
         sendAnswerTask = new SendAnswerTask(answerId);
         sendAnswerTask.execute((Void) null);
@@ -79,10 +87,10 @@ public class VoteActivity extends AppCompatActivity {
         }
 
         mQuestion.setText(mSurvey.getQuestion());
-        for (Map.Entry<Integer, String> e : mSurvey.getAnswers().entrySet()) {
+        for (Answer a : mSurvey.getAnswers()) {
             RadioButton radioButton = new RadioButton(this);
-            radioButton.setId(e.getKey());
-            radioButton.setText(e.getValue());
+            radioButton.setId(a.getId());
+            radioButton.setText(a.getAnswer());
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
