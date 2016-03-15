@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#18BC9C</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#3498db</color>
     <color name="bootstrapSuccess">#18BC9C</color>
-    <color name="bootstrapInfo">#217DBB</color>
+    <color name="bootstrapInfo">#3498db</color>
 </resources>

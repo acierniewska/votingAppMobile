@@ -33,13 +33,16 @@ public class ShowResultActivity extends AppCompatActivity {
         for (Answer a : mSurvey.getAnswers()) {
             tv = new TextView(this);
             if (best) {
-                tv.setTextColor(ContextCompat.getColor(this, (R.color.bootstrapSuccess)));
-                tv.setTypeface(null, Typeface.BOLD);
-                if (oldAnswer != null && oldAnswer.getPercent() == a.getPercent()) {
+                if (oldAnswer != null && oldAnswer.getPercent() != a.getPercent()) {
                     best = false;
+                } else {
+                    tv.setTextColor(ContextCompat.getColor(this, (R.color.bootstrapSuccess)));
+                    tv.setTypeface(null, Typeface.BOLD);
                 }
                 oldAnswer = a;
-            } else {
+            }
+
+            if (!best) {
                 tv.setTextColor(ContextCompat.getColor(this, (R.color.bootstrapInfo)));
             }
             tv.setText(a.getAnswer() + " - " + a.getPercent() + "%");
