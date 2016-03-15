@@ -60,7 +60,8 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Integer surveyId = Integer.valueOf(messagePart[1].trim());
         intent.putExtra("surveyId", surveyId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, surveyId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

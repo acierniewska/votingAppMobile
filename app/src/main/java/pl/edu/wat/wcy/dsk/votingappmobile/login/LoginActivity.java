@@ -101,6 +101,15 @@ public class LoginActivity extends AppCompatActivity {
         registerReceiver();
     }
 
+
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+    }
+
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
@@ -196,13 +205,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void registerReceiver() {
-        if (!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
-            isReceiverRegistered = true;
-        }
-    }
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
