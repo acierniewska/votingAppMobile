@@ -22,5 +22,4 @@
     <string name="no_active_survey">Brak aktywnej ankiety :(</string>
     <string name="voting_imposibru">"Nie możesz oddać głosu :("</string>
     <string name="voting_success">Głos oddany - dzięki!</string>
-    <string name="answer_result">%d - %d%</string>
 </resources>

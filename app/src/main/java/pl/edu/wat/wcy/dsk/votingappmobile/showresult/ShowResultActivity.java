@@ -42,7 +42,7 @@ public class ShowResultActivity extends AppCompatActivity {
             } else {
                 tv.setTextColor(ContextCompat.getColor(this, (R.color.bootstrapInfo)));
             }
-            tv.setText(getString(R.string.answer_result, a.getAnswer(), a.getPercent()));
+            tv.setText(a.getAnswer() + " - " + a.getPercent() + "%");
             answerLayout.addView(tv);
         }
     }

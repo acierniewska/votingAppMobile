@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -64,8 +66,7 @@ public class VoteActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
 
@@ -84,10 +85,23 @@ public class VoteActivity extends AppCompatActivity {
         }
 
         mQuestion.setText(mSurvey.getQuestion());
+        ColorStateList colorStateList = new ColorStateList(
+                new int[][]{
+
+                        new int[]{-android.R.attr.state_enabled}, //disabled
+                        new int[]{android.R.attr.state_enabled} //enabled
+                },
+                new int[]{
+                        ContextCompat.getColor(this, R.color.bootstrapInfo), //disabled
+                        ContextCompat.getColor(this, R.color.bootstrapSuccess) //enabled
+                }
+        );
+
         for (Answer a : mSurvey.getAnswers()) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setId(a.getId());
             radioButton.setText(a.getAnswer());
+            radioButton.setButtonTintList(colorStateList);
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -143,7 +157,7 @@ public class VoteActivity extends AppCompatActivity {
 
         private final int answerId;
 
-        SendAnswerTask( int answerId) {
+        SendAnswerTask(int answerId) {
             this.answerId = answerId;
         }
 
