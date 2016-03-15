@@ -61,7 +61,7 @@ public class MyGcmListenerService extends GcmListenerService {
         Integer surveyId = Integer.valueOf(messagePart[1].trim());
         intent.putExtra("surveyId", surveyId);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, surveyId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
